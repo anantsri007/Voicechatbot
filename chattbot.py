@@ -1,6 +1,11 @@
 
+
+
+
+
 import gradio as gr
 import google.generativeai as genai
+import os
 
 # Directly set the Gemini API key
 genai.configure(api_key="AIzaSyBoI-KIbYxbThZL9-2q8nqmXnzdTcnzozo")
@@ -65,7 +70,12 @@ iface = gr.Interface(
 )
 
 if __name__ == "__main__":
-    iface.launch()
+    # Listen on 0.0.0.0 and the port provided by the environment (for Render/Cloud)
+    iface.launch(
+        server_name="0.0.0.0",
+        server_port=int(os.environ.get("PORT", 7860))
+    )
+
 
 
 
