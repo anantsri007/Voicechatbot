@@ -1,3 +1,4 @@
+
 import gradio as gr
 import google.generativeai as genai
 
@@ -20,34 +21,30 @@ Answer all questions confidently and concisely in first person, as if speaking d
 
 def chat_with_gemini(audio_file, history):
     if audio_file is None:
-        return "Please upload an audio file!", history
+        return "Please say something!", history
 
-    # Here, you would normally transcribe the audio to text.
-    # Since Render doesn't allow PyAudio/SpeechRecognition, either:
-    # - Use a third-party speech-to-text API (like Google Cloud Speech-to-Text), or
-    # - Ask users to upload a text file instead, or
-    # - (As below) just inform the user that transcription is not supported.
-    return "Audio transcription is not supported in this deployment. Please provide your question as text.", history
+    import speech_recognition as sr
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(audio_file) as source:
+        audio_data = recognizer.record(source)
+        try:
+            text = recognizer.recognize_google(audio_data)
+        except Exception as e:
+            return f"Speech recognition failed: {e}", history
 
-iface = gr.Interface(
-    fn=chat_with_gemini,
-    inputs=[
-        gr.Audio(type="filepath", label="Upload your interview question (audio file)"),
-        gr.State()
-    ],
-    outputs=[
-        gr.Textbox(label="🤖 Bot's Response"),
-        gr.State()
-    ],
-    title="🏠 Home.LLC Interview Voice Bot by Anant Srivastava (Gemini)",
-    description="🎤 Upload a question as audio (transcription not supported in this demo). Powered by Google Gemini."
-)
+    history = history or []
+    history.append(("User", text))
 
-if __name__ == "__main__":
-    iface.launch()
+    prompt = PERSONA_CONTEXT + "\n"
+    for human, bot in zip(history[::2], history[1::2]):
+        prompt += f"User: {human[1]}\nBot: {bot[1]}\n"
+    if len(history) % 2 == 1:
+        prompt += f"User: {history[-1][1]}\nBot:"
 
-
-
+    try:
+        response = model.generate_content(prompt)
+        answer = response.text.strip()
+    except Exception as e:
         answer = f"Gemini API error: {e}"
 
     history.append(("Bot", answer))
@@ -69,6 +66,13 @@ iface = gr.Interface(
 
 if __name__ == "__main__":
     iface.launch()
+
+
+
+
+
+
+
 
 
 
