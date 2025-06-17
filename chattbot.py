@@ -4,15 +4,9 @@
 
 import gradio as gr
 import google.generativeai as genai
-from dotenv import load_dotenv
-import os
 
-# Load environment variables from .env file
-load_dotenv()
-
-
-
-
+# Directly set the Gemini API key
+genai.configure(api_key="AIzaSyBoI-KIbYxbThZL9-2q8nqmXnzdTcnzozo")
 
 # Initialize Gemini model (use the latest available)
 model = genai.GenerativeModel('gemini-1.5-flash-latest')
@@ -75,100 +69,6 @@ iface = gr.Interface(
 
 if __name__ == "__main__":
     iface.launch()
-
-
-
-
-
-
-
-
-
-
-
-
-
-# import gradio as gr
-# from openai import OpenAI
-
-# # Directly pass your API key here (NOT recommended for shared/public code)
-# client = OpenAI(api_key="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")
-
-# def chat_with_gpt(audio_file, history):
-#     if audio_file is None:
-#         return "Please say something!", history
-
-#     # Transcribe audio using Whisper (new OpenAI SDK syntax)
-#     try:
-#         with open(audio_file, "rb") as f:
-#             transcription = client.audio.transcriptions.create(
-#                 model="whisper-1",
-#                 file=f
-#             )
-#         text = transcription.text
-#     except Exception as e:
-#         return f"Transcription failed: {e}", history
-
-#     # Build conversation history
-#     history = history or []
-#     history.append(("User", text))
-
-#     messages = [
-#         {"role": "system", "content": "You are Anant, a confident and curious candidate interviewing for Home.LLC's AI Agent team. Answer like you're talking directly to the CEO."}
-#     ]
-
-#     # Add previous exchanges to message history
-#     for human, bot in zip(history[::2], history[1::2]):
-#         messages.append({"role": "user", "content": human[1]})
-#         messages.append({"role": "assistant", "content": bot[1]})
-#     if len(history) % 2 == 1:
-#         messages.append({"role": "user", "content": history[-1][1]})
-
-#     # Call OpenAI ChatGPT API (new syntax)
-#     try:
-#         response = client.chat.completions.create(
-#             model="gpt-4o",
-#             messages=messages
-#         )
-#         answer = response.choices[0].message.content.strip()
-#     except Exception as e:
-#         return f"OpenAI response failed: {e}", history
-
-#     # Save to history
-#     history.append(("Bot", answer))
-#     return answer, history
-
-# iface = gr.Interface(
-#     fn=chat_with_gpt,
-#     inputs=[
-#         gr.Audio(sources=["microphone"], type="filepath", label="🎙️ Speak your interview question"),
-#         gr.State()
-#     ],
-#     outputs=[
-#         gr.Textbox(label="🤖 Bot's Response"),
-#         gr.State()
-#     ],
-#     title="🏠 Home.LLC Interview Voice Bot by Anant Srivastav",
-#     description="🎤 Speak a question and hear how Anant would respond in the interview. Powered by Whisper + GPT-4o."
-# )
-
-# if __name__ == "__main__":
-#     iface.launch()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
